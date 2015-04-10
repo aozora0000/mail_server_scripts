@@ -1,0 +1,7 @@
+---
+aws:
+    s3:
+        backet:
+        access_key:
+        secret_key:
+        region: ap-northeast-1

@@ -1,0 +1,129 @@
+- hosts: all
+  vars:
+    spam:
+        # スパム判定時の件名の先頭につけるメッセージ
+        message: "[spam] "
+        final_virus_destiny:      D_DISCARD # ウィルスメールの最終的な処理方法
+        final_banned_destiny:     D_BOUNCE  # 禁止されたメールの最終的な処理方法
+        final_spam_destiny:       D_BOUNCE  # スパムメールの最終的な処理方法
+        final_bad_header_destiny: D_PASS    # ヘッダにASCII以外の文字が含まれているメールの最終的な処理方法
+        # 以下、最終処理パラメータの説明
+        # D_PASS <---メールは受信者に配送される
+        # D_REJECT <---メールは配送されないが、送信者に配送されなかった事を伝える
+        # D_BOUNCE <---メールは配送されないが、送信者に配送されなかった事を伝える。例外で伝えない場合もある
+        # D_DISCARD <---メールは配送されず、送信者にも配送されなかった事を伝えない
+  vars_files:
+    - vars/main.yml
+    - vars/mail.yml
+    - vars/alias.yml
+    - vars/aws.yml
+  tasks:
+    - name: fastermirrorレポジトリ設定変更
+      command: echo include_only=.jp >> /etc/yum/pluginconf.d/fastestmirror.conf
+
+    - name: epelレポジトリインストール
+      yum: name=http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
+
+    - name: pythonパッケージインストール
+      yum: name=python-setuptools state=installed
+    - name: pipインストール
+      easy_install: name=pip
+    - name: awscliインストール
+      pip: name=awscli
+
+    - name: aws設定ファイル設置
+      template: src=./files/.bashrc.j2 dest=/root/.bashrc
+
+    - name: バックアップ用シェルスクリプト設置
+      template: src=./files/aws.sh.j2 dest=/root/aws.sh mode="a+x"
+
+    - name: Postfix/Dovecot/その他インストール
+      yum: name={{item}} state=installed
+      with_items:
+          - postfix
+          - dovecot
+          - htop
+          - amavisd-new
+          - clamd
+          - spamassassin
+
+    - name: メールグループ作成
+      group: name=vmailuser gid=10000 state=present
+    - name: メールユーザー作成
+      user:  name=vmailuser uid=10000 group=vmailuser
+
+    - name: メールスプールディレクトリの作成
+      file: path=/var/spool/virtual state=directory group=vmailuser owner=vmailuser
+
+    - name: postfix関連設定ファイルコピー
+      template: src=./files/postfix/{{ item }}.j2 dest=/etc/postfix/{{ item }}
+      with_items:
+          - main.cf
+          - master.cf
+
+    - name: dovecot関連設定ファイルコピー
+      copy: src=./files/dovecot/{{ item }} dest=/etc/dovecot/{{ item }} force=yes
+      with_items:
+          - master.conf
+          - conf.d/10-master.conf
+
+    - name: amavisd関連設定ファイルコピー
+      template: src=./files/amavisd/{{ item }}.j2 dest=/etc/amavisd/{{ item }}
+      with_items:
+          - amavisd.conf
+
+    - name: spamassassinのホワイト・ブラックリスト設置
+      copy: src=./files/spamassassin/local.cf dest=/etc/mail/spamassassin/local.cf force=yes
+
+    - name: ドメイン/エイリアス設定クリア
+      file: path={{ item }} state=absent
+      with_items:
+          - /etc/postfix/virtual-domain
+          - /etc/postfix/virtual-alias
+          - /etc/dovecot/passwd
+          - /etc/aliases
+      ignore_errors: true
+
+    - name: 管理者メールの設定
+      shell: |
+            echo "virusalert: {{ mailmaster }}" > /etc/aliases
+
+    - name: ドメイン設定
+      shell: |
+            echo "{{ item.user }}@{{ item.domain }} {{ item.domain }}/{{ item.user }}/Maildir/" >> /etc/postfix/virtual-domain
+            echo "{{ item.user }}@{{ item.domain }}:`doveadm pw -p {{ item.pass }}`" >> /etc/dovecot/passwd
+      with_items: mail
+
+    - name: エイリアス設定
+      shell: |
+            echo "{{ item.receive }} {{ item.via }}" >> /etc/postfix/virtual-alias
+            echo "{{ item.via }}: {{ item.foward }}" >> /etc/aliases
+      with_items: alias
+      ignore_errors: true
+
+    - name: バーチャルドメイン/エイリアス設定
+      shell: |
+            postmap /etc/postfix/virtual-mailbox
+            postmap /etc/postfix/virtual-alias
+            newaliases
+
+    - name: awsバックアップのcron設定
+      cron: name="s3バックアップ"
+            job="bash /root/aws.sh > /var/log/s3log.log"
+            minute="{{ s3backup.minute }}"
+            hour="{{ s3backup.hour }}"
+            day="{{ s3backup.day}}"
+            weekday="{{ s3backup.weekday }}"
+            month="{{ s3.backup.month }}"
+
+
+    - name: サービス再起動
+      service: name={{ item }} state=restarted enabled=yes
+      with_items:
+          - postfix
+          - dovecot
+          - clamd.amavisd
+          - spamassassin
+          - amavisd
+    - name: ウィルス定義ファイルの更新
+      shell: freshclam

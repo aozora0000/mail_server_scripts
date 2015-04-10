@@ -1,0 +1,6 @@
+whitelist_from *.examples-1.com
+whitelist_from *@examples-2.com
+whitelist_from *@gmail.com
+
+blacklist_from *test-example.com
+blacklist_from *@test.org

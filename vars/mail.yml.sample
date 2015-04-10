@@ -1,0 +1,8 @@
+mail:
+    - domain: example.net
+      user: info
+      pass: example
+
+    - domain: example.net
+      user: hostmaster
+      pass: hostmaster

@@ -1,0 +1,14 @@
+# 管理者のメールアドレス
+mailmaster: master@example.net
+# メールサーバーのドメイン(登録したAレコード)
+mydomain: mail.example.net
+# MX登録したバーチャルドメイン
+domains:
+    - example.com
+    - example.info
+s3backup:
+    minute: 0
+    hour: *
+    day: *
+    weekday: *
+    month: *

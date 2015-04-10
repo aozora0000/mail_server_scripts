@@ -1,0 +1,4 @@
+alias:
+    - receive: hostmaster@example.net
+      foward:  info@example.net
+      via:     viaanother
