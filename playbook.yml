@@ -116,6 +116,10 @@
             weekday="{{ s3backup.weekday }}"
             month="{{ s3.backup.month }}"
 
+    - name: awsからバックアップメールを取得する
+      shell: |
+            aws s3 sync s3://{{ aws.s3.backet }} /var/spool/virtual
+            chown -R vmailuser:vmailuser /var/spool/virtual
 
     - name: サービス再起動
       service: name={{ item }} state=restarted enabled=yes
