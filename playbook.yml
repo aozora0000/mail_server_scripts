@@ -97,7 +97,7 @@
     - name: エイリアス設定
       shell: |
             echo "{{ item.receive }} {{ item.via }}" >> /etc/postfix/virtual-alias
-            echo "{{ item.via }}: {{ item.foward }}" >> /etc/aliases
+            echo "{{ item.via }}: {{ item.forward }}" >> /etc/aliases
       with_items: alias
       ignore_errors: true
 
@@ -114,7 +114,7 @@
             hour="{{ s3backup.hour }}"
             day="{{ s3backup.day}}"
             weekday="{{ s3backup.weekday }}"
-            month="{{ s3.backup.month }}"
+            month="{{ s3backup.month }}"
 
     - name: awsからバックアップメールを取得する
       shell: |
