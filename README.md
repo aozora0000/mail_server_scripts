@@ -68,10 +68,11 @@ mv ./vars/*.yml.sample ./vars/*.yml
 
 パラメータ名  | 内容
 --------------|------
-mailserver | 管理人のメールアドレス
+mailmaster | 管理人のメールアドレス
 mydomain | Aレコード登録したサーバーのドメイン
 domains | MX登録したバーチャルドメイン
 s3buckup | amazonS3へバックアップするCronスケジュール
+reporter | mailmasterに送信するメールディレクトリの容量レポートスケジュール
 
 #### mail.ymlについて
 
@@ -111,6 +112,11 @@ backet | s3のバケット名(s3://[この部分])です
 access_key | s3へのアクセスキーです
 secret_key | s3への秘密鍵です
 region | バケットのリージョンです
+
+#### spam.ymlについて
+パラメータ名  | 内容
+--------------|------
+message | スパムメール受信時の件名頭につけるメッセージ
 
 #### hostsについて
 ``[all]``以下に設定したいサーバーを入れてください。

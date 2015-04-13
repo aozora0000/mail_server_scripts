@@ -26,8 +26,7 @@
       template: src=./files/{{ item }}.j2 dest=/root/{{ item }} mode="a+x"
       with_items:
           - aws.sh
-          - quotacheck.sh
-          - report.sh
+          - reporter.sh
 
     - name: Postfix/Dovecot/その他インストール
       yum: name={{item}} state=installed
@@ -108,6 +107,15 @@
             day="{{ s3backup.day}}"
             weekday="{{ s3backup.weekday }}"
             month="{{ s3backup.month }}"
+
+    - name: メールディレクトリ容量レポーターのcron設定
+      cron: name="ディレクトリレポーター"
+            job="bash /root/reporter.sh > /dev/null"
+            minute="{{ reporter.minute }}"
+            hour="{{ reporter.hour }}"
+            day="{{ reporter.day}}"
+            weekday="{{ reporter.weekday }}"
+            month="{{ reporter.month }}"
 
     - name: awsからバックアップメールを取得する
       shell: |
