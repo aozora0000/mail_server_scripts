@@ -78,6 +78,7 @@
     - name: ドメイン/エイリアス設定クリア
       file: path={{ item }} state=absent
       with_items:
+          - /etc/postfix/virtual-mailbox
           - /etc/postfix/virtual-domain
           - /etc/postfix/virtual-alias
           - /etc/dovecot/passwd
@@ -90,7 +91,7 @@
 
     - name: ドメイン設定
       shell: |
-            echo "{{ item.user }}@{{ item.domain }} {{ item.domain }}/{{ item.user }}/Maildir/" >> /etc/postfix/virtual-domain
+            echo "{{ item.user }}@{{ item.domain }} {{ item.domain }}/{{ item.user }}/Maildir/" >> /etc/postfix/virtual-mailbox
             echo "{{ item.user }}@{{ item.domain }}:`doveadm pw -p {{ item.pass }}`" >> /etc/dovecot/passwd
       with_items: mail
 
