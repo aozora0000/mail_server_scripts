@@ -1,22 +1,10 @@
 - hosts: all
-  vars:
-    spam:
-        # スパム判定時の件名の先頭につけるメッセージ
-        message: "[spam] "
-        final_virus_destiny:      D_DISCARD # ウィルスメールの最終的な処理方法
-        final_banned_destiny:     D_BOUNCE  # 禁止されたメールの最終的な処理方法
-        final_spam_destiny:       D_BOUNCE  # スパムメールの最終的な処理方法
-        final_bad_header_destiny: D_PASS    # ヘッダにASCII以外の文字が含まれているメールの最終的な処理方法
-        # 以下、最終処理パラメータの説明
-        # D_PASS <---メールは受信者に配送される
-        # D_REJECT <---メールは配送されないが、送信者に配送されなかった事を伝える
-        # D_BOUNCE <---メールは配送されないが、送信者に配送されなかった事を伝える。例外で伝えない場合もある
-        # D_DISCARD <---メールは配送されず、送信者にも配送されなかった事を伝えない
   vars_files:
     - vars/main.yml
     - vars/mail.yml
     - vars/alias.yml
     - vars/aws.yml
+    - vars/spam.yml
   tasks:
     - name: fastermirrorレポジトリ設定変更
       command: echo include_only=.jp >> /etc/yum/pluginconf.d/fastestmirror.conf
@@ -34,8 +22,12 @@
     - name: aws設定ファイル設置
       template: src=./files/.bashrc.j2 dest=/root/.bashrc
 
-    - name: バックアップ用シェルスクリプト設置
-      template: src=./files/aws.sh.j2 dest=/root/aws.sh mode="a+x"
+    - name: CRON用シェルスクリプト設置
+      template: src=./files/{{ item }}.j2 dest=/root/{{ item }} mode="a+x"
+      with_items:
+          - aws.sh
+          - quotacheck.sh
+          - report.sh
 
     - name: Postfix/Dovecot/その他インストール
       yum: name={{item}} state=installed
@@ -130,5 +122,6 @@
           - clamd.amavisd
           - spamassassin
           - amavisd
+
     - name: ウィルス定義ファイルの更新
       shell: freshclam

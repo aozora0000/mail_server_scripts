@@ -1,18 +1,37 @@
+# 各ディレクトリパス設定
 queue_directory = /var/spool/postfix
 command_directory = /usr/sbin
 daemon_directory = /usr/libexec/postfix
 data_directory = /var/lib/postfix
+manpage_directory = /usr/share/man
+html_directory = no
 
+# 実行ファイルパス設定
+sendmail_path = /usr/sbin/sendmail.postfix
+newaliases_path = /usr/bin/newaliases.postfix
+mailq_path = /usr/bin/mailq.postfix
+
+# 権限設定
 mail_owner = postfix
+setgid_group = postdrop
+
+# ネットワーク設定
 inet_interfaces = all
 inet_protocols = all
 
+# ドメイン設定
 mydomain = {{ mydomain }}
 mydestination = $myhostname, localhost.$mydomain, localhost
-
-unknown_local_recipient_reject_code = 550
 mynetworks_style = host
 
+# 存在しないアドレスへの返答コード
+unknown_local_recipient_reject_code = 550
+
+# メール・ディレクトリのクォータ設定
+mailbox_size_limit = {{ mailbox_size_limit }} #(無視されますが必須？)
+message_size_limit = {{ message_limit }}   #(mailbox_size_limitより小さく無いとダメ)
+
+# エイリアスマップ設定
 alias_maps = hash:/etc/aliases
 alias_database = hash:/etc/aliases
 debug_peer_level = 2
@@ -20,28 +39,28 @@ debugger_command =
 	 PATH=/bin:/usr/bin:/usr/local/bin:/usr/X11R6/bin
 	 ddd $daemon_directory/$process_name $process_id & sleep 5
 
-sendmail_path = /usr/sbin/sendmail.postfix
-newaliases_path = /usr/bin/newaliases.postfix
-mailq_path = /usr/bin/mailq.postfix
-setgid_group = postdrop
-html_directory = no
-manpage_directory = /usr/share/man
 
+# バーチャルドメイン・メールボックスマップ設定
+virtual_mailbox_base = /var/spool/virtual
+virtual_uid_maps = static:10000
+virtual_gid_maps = static:10000
 virtual_mailbox_domains = {{ domains|join(", ") }}
 virtual_mailbox_maps = hash:/etc/postfix/virtual-mailbox
 virtual_alias_maps = hash:/etc/postfix/virtual-alias
-virtual_uid_maps = static:10000
-virtual_gid_maps = static:10000
-virtual_mailbox_base = /var/spool/virtual
 
+
+# 認証設定
 smtpd_sasl_type = dovecot
 smtpd_sasl_path = private/auth
 smtpd_sasl_auth_enable = yes
 smtpd_sasl_local_domain = $myhostname
 smtpd_recipient_restrictions=
-    permit_mynetworks,
-    permit_sasl_authenticated,
-    reject_unauth_destination
+	 permit_mynetworks,
+	 permit_sasl_authenticated,
+	 reject_unauth_destination
+
+# 匿名・平文パスワード禁止
 smtpd_sasl_security_options=noanonymous,noplaintext
 
+# コンテンツフィルターへのパス設定
 content_filter = smtp-amavis:[127.0.0.1]:10024
