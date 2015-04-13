@@ -43,6 +43,9 @@
     - name: メールユーザー作成
       user:  name=vmailuser uid=10000 group=vmailuser
 
+    - name: PostfixへMTAを変更
+      shell: alternatives --set mta /usr/sbin/sendmail.postfix
+
     - name: メールスプールディレクトリの作成
       file: path=/var/spool/virtual state=directory group=vmailuser owner=vmailuser
 
