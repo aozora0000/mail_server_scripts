@@ -27,7 +27,7 @@ AmazonS3と連携し、メールデータがバックアップされます。
 
 - ゲスト
  - CentOS 6.5
- - TCP 22(SSH),110(POP3),587(SUBMISSION) 開放済み
+ - TCP 22(SSH),110(POP3),143(IMAP)587(SUBMISSION) 開放済み
 
 - 構築後
  - Postfix
