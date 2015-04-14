@@ -1,6 +1,14 @@
 spam:
     # スパム判定時の件名の先頭につけるメッセージ
     message: "[spam] "
+
+    # ホワイトリスト
+    white_lists:
+        - "*@gmail.com"
+    # ブラックリスト
+    black_lists:
+
+    # 陽性メールの処理方法
     final_virus_destiny:      D_DISCARD # ウィルスメールの最終的な処理方法
     final_banned_destiny:     D_BOUNCE  # 禁止されたメールの最終的な処理方法
     final_spam_destiny:       D_BOUNCE  # スパムメールの最終的な処理方法

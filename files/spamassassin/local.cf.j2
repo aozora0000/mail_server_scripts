@@ -1,0 +1,12 @@
+# {{ ansible_managed }}
+{% if spam.white_lists is iterable %}
+{% for white_address in spam.white_lists %}
+whitelist_from {{ white_address }}
+{% endfor %}
+{% endif %}
+
+{% if spam.black_lists is iterable %}
+{% for black_address in spam.black_lists %}
+blacklist_from {{ black_address }}
+{% endfor %}
+{% endif %}

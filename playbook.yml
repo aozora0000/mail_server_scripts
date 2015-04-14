@@ -68,7 +68,8 @@
           - amavisd.conf
 
     - name: spamassassinのホワイト・ブラックリスト設置
-      copy: src=./files/spamassassin/local.cf dest=/etc/mail/spamassassin/local.cf force=yes
+      template: src=./files/spamassassin/local.cf.j2 dest=/etc/mail/spamassassin/local.cf
+      ignore_errors: true
 
     - name: ドメイン/エイリアス設定クリア
       file: path={{ item }} state=absent
