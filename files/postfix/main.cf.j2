@@ -54,10 +54,13 @@ smtpd_sasl_type = dovecot
 smtpd_sasl_path = private/auth
 smtpd_sasl_auth_enable = yes
 smtpd_sasl_local_domain = $myhostname
-smtpd_recipient_restrictions=
-	 permit_mynetworks,
-	 permit_sasl_authenticated,
-	 reject_unauth_destination
+smtpd_recipient_restrictions =
+	permit_mynetworks,
+	permit_sasl_authenticated,
+	reject_rbl_client all.rbl.jp,
+	reject_rbl_client bl.spamcop.net,
+	reject_rbl_client zen.spamhaus.org,
+	reject_unauth_destination
 
 # 匿名・平文パスワード禁止
 smtpd_sasl_security_options=noanonymous,noplaintext
