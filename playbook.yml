@@ -5,6 +5,7 @@
     - vars/alias.yml
     - vars/aws.yml
     - vars/spam.yml
+    - vars/mailing.yml
   tasks:
     - name: fastermirrorレポジトリ設定変更
       command: echo include_only=.jp >> /etc/yum/pluginconf.d/fastestmirror.conf
@@ -76,7 +77,6 @@
           - /etc/postfix/virtual-domain
           - /etc/postfix/virtual-alias
           - /etc/dovecot/passwd
-          - /etc/aliases
       ignore_errors: true
 
     - name: 管理者メールの設定
@@ -90,10 +90,13 @@
       with_items: mail
 
     - name: エイリアス設定
-      shell: |
-            echo "{{ item.receive }} {{ item.via }}" >> /etc/postfix/virtual-alias
-            echo "{{ item.via }}: {{ item.forward }}" >> /etc/aliases
+      shell: echo "{{ item.receive }} {{ item.forward }}" >> /etc/postfix/virtual-alias
       with_items: alias
+      ignore_errors: true
+
+    - name: メーリングリスト設定
+      shell: echo "{{ item.master }} {{ item.user|join(', ') }}" >> /etc/postfix/virtual-alias
+      with_items: mailing
       ignore_errors: true
 
     - name: バーチャルドメイン/エイリアス設定

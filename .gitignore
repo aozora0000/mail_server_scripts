@@ -3,3 +3,4 @@ vars/aws.yml
 vars/mail.yml
 vars/main.yml
 vars/alias.yml
+vars/mailing.yml

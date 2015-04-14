@@ -1,0 +1,6 @@
+mailing:
+    - master: group@example.net
+      user:
+          - user1@exapmle.net
+          - user2@exapmle.net
+          - hostmaster@exapmle2.net
