@@ -104,7 +104,7 @@
 
     - name: awsバックアップのcron設定
       cron: name="s3バックアップ"
-            job="bash /root/aws.sh > /var/log/s3log.log"
+            job="bash /root/aws.sh >> /var/log/s3log.log"
             minute="{{ s3backup.minute }}"
             hour="{{ s3backup.hour }}"
             day="{{ s3backup.day}}"

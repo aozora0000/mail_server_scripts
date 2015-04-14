@@ -1,2 +1,3 @@
 #/bin/bash -l
+# todo: タイムスタンプ付きで実行したい
 aws s3 sync /var/spool/virtual s3://{{ aws.s3.backet }} --delete
