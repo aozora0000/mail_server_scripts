@@ -174,7 +174,7 @@ ansible-playbook playbook.yml -i ./hosts
 ```
 
 ## サーバー環境について
-- メールボックス ```/var/spool/virtual```
+- メールボックス ```/var/spool/virtual/[domain]/[user]```
 - バーチャルドメインマップ ```/etc/postfix/virtual-domain```
 - エイリアスマップ ```/etc/postfix/virtual-alias```
 - スパムのホワイト・ブラックリスト管理 ```./files/spamassasin/local.cf```参照
