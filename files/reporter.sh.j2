@@ -1,2 +1,3 @@
 #!/bin/bash
+# {{ ansible_managed }}
 du /var/spool/virtual/* --max-depth=1 -k | sort -r | sed -e 's/\/var\/spool\/virtual\///g' | mail -s "`date +'%Y-%m-%d'`: メールディレクトリ容量通知" -r "`uname -n`" {{ mailmaster }}

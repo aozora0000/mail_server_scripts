@@ -9,6 +9,7 @@ if [ -f /etc/bashrc ]; then
    . /etc/bashrc
 fi
 
+# {{ ansible_managed }}
 export AWS_ACCESS_KEY_ID={{ aws.access_key }}
 export AWS_SECRET_ACCESS_KEY={{ aws.secret_key }}
 export AWS_DEFAULT_REGION={{ aws.region }}
