@@ -1,14 +1,43 @@
 # 管理者のメールアドレス
 mailmaster: master@example.net
+
 # メールサーバーのドメイン(登録したAレコード)
 mydomain: mail.example.net
+
 # MX登録したバーチャルドメイン
 domains:
     - example.com
     - example.info
+
+# ディレクトリサイズの制限[報告のみ](byte)
+mailbox_size_limit: 204800000
+
+# メールサイズの制限(byte)
+message_limit: 5120000
+
+# 配信数・接続制限
+transport_limit:
+    # 単位時間の設定
+    rate_time: 60s
+    # 単位時間あたりの配信制限
+    send_limit_rate: 100
+    # クライアント辺りの同時接続数制限
+    max_connection: 10
+    # 単位時間あたりのクライアント接続回数制限
+    connection_limit_rate: 20
+
+# S3バックアップのタイミング
 s3backup:
-    minute: 0
-    hour: *
-    day: *
-    weekday: *
-    month: *
+    minute: "*/15"
+    hour: "*"
+    day: "*"
+    weekday: "*"
+    month: "*"
+
+# メールディレクトリ容量レポートのタイミング（管理者のメールアドレス宛）
+reporter:
+    minute: "0"
+    hour: "23"
+    day: "*"
+    weekday: "*"
+    month: "*"

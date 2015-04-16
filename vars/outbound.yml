@@ -1,0 +1,9 @@
+---
+outbound:
+    rate_time: 10s
+    send_limit_rate: 10
+    domains:
+        - gmail.com
+        - i.softbank.jp
+        - ezweb.ne.jp
+        - docomo.ne.jp

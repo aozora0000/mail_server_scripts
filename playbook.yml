@@ -6,6 +6,7 @@
     - vars/aws.yml
     - vars/spam.yml
     - vars/mailing.yml
+    - vars/outbound.yml
   tasks:
     - name: fastermirrorレポジトリ設定変更
       command: echo include_only=.jp >> /etc/yum/pluginconf.d/fastestmirror.conf
@@ -75,8 +76,8 @@
       file: path={{ item }} state=absent
       with_items:
           - /etc/postfix/virtual-mailbox
-          - /etc/postfix/virtual-domain
           - /etc/postfix/virtual-alias
+          - /etc/postfix/transport
           - /etc/dovecot/passwd
       ignore_errors: true
 
@@ -95,6 +96,11 @@
       with_items: alias
       ignore_errors: true
 
+    - name: 配信制限設定
+      shell: echo "{{ item}}  slow:" >> /etc/postfix/transport
+      with_items: outbound.domains
+      ignore_errors: true
+
     - name: メーリングリスト設定
       shell: echo "{{ item.master }} {{ item.user|join(', ') }}" >> /etc/postfix/virtual-alias
       with_items: mailing
@@ -104,6 +110,7 @@
       shell: |
             postmap /etc/postfix/virtual-mailbox
             postmap /etc/postfix/virtual-alias
+            postmap /etc/postfix/transport
             newaliases
 
     - name: awsバックアップのcron設定

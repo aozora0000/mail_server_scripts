@@ -15,6 +15,11 @@ AmazonS3と連携し、メールデータがバックアップされます。
 当方、いかなる責任も取れません。
 
 ## 更新履歴
+### 2015-04-16
+- 単位時間辺りの配信数制限を追加しました。
+- クライアント辺りの同時接続数/時間あたりの接続回数制限を追加しました。
+- 特定のドメインに対する遅延配信設定(スパム回避の為)を追加しました([outbound.ymlについて](#outbound.yml)を参照)
+
 ### 2015-04-14
 - 簡易メーリングリスト作成機能を追加しました。([mailing.ymlについて](#mailing.yml)を参照)
 - メールエイリアスに関する設定を変更([alias.ymlについて](#alias.yml)を参照)
@@ -116,6 +121,10 @@ reporter | mailmasterに送信するメールディレクトリの容量レポ�
 domain | 登録したいバーチャルドメインのドメイン名
 user   | 登録したいユーザー名
 pass   | 登録したいパスワード
+transport_limit.rate_time | 配信制限用の単位時間
+transport_limit.send_limit_rate | 単位時間あたりの制限配信数
+transport_limit.maxconnection | クライアント辺りの同時接続数制限
+transport_limit.connection_limit_rate | 単位時間辺りのクライアント接続回数制限
 
 #### <a name="alias.yml"> alias.ymlについて
 
@@ -170,6 +179,19 @@ spamassassin/amavisd用の設定情報が格納されています。
 message | スパムメール受信時の件名頭につけるメッセージ
 white_lists | ホワイトリストに入れるメールアドレス
 black_lists | ブラックリストに入れるメールアドレス
+
+#### <a name="outbound.yml"> outbound.ymlについて
+
+送信時の外部サーバー接続制限(遅延接続)用の設定情報が格納されています。
+
+※domainsへの追加は配列として格納してください。
+パラメータ名  | 内容
+--------------|------
+rate_limit | 配信制限用の単位時間
+send_limit_rate | 単位時間辺りの配信数
+domains | 遅延接続を有効にするドメイン
+
+
 
 #### hostsについて
 ``[all]``以下に設定したいサーバーを入れてください。

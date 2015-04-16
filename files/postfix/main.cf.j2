@@ -66,5 +66,19 @@ smtpd_recipient_restrictions =
 # 匿名・平文パスワード禁止
 smtpd_sasl_security_options=noanonymous,noplaintext
 
+# 単位時間あたりの配信数制限
+anvil_rate_time_unit = {{ transport_limit.rate_time }}
+smtpd_client_message_rate_limit = {{ transport_limit.send_limit_rate }}
+smtpd_client_connection_count_limit = {{ transport_limit.max_connection }}
+smtpd_client_connection_rate_limit = {{ transport_limit.connection_limit_rate }}
+
+# 外部配信用配信制限
+transport_maps = hash:/etc/postfix/transport
+slow_destination_rate_delay = {{ outbound.rate_time }}
+slow_initial_destination_concurrency = 2
+slow_destination_concurrency_limit = {{ outbound.send_limit_rate }}
+
+
+
 # コンテンツフィルターへのパス設定
 content_filter = smtp-amavis:[127.0.0.1]:10024
