@@ -29,6 +29,7 @@
       with_items:
           - aws.sh
           - reporter.sh
+          - dovecot.sh
 
     - name: Postfix/Dovecot/その他インストール
       yum: name={{item}} state=installed
@@ -130,6 +131,15 @@
             day="{{ reporter.day}}"
             weekday="{{ reporter.weekday }}"
             month="{{ reporter.month }}"
+
+    - name: Dovecotアクセスログレポーターのcron設定
+      cron: name="Dovecotレポーター"
+            job="bash /root/ipconfig.sh > mail -s Dovecotレポーター {{ mailmaster }}"
+            minute="0"
+            hour="1"
+            day="*"
+            weekday="0"
+            month="*"
 
     - name: awsからバックアップメールを取得する
       shell: |
